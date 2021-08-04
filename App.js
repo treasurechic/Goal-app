@@ -31,7 +31,7 @@ export default function App() {
         />
         <Button title="ADD" onPress={addGoalHandler} />
       </View>
-      <ScrollView style={{backgroundColor:'red', flex:1}}>
+      <ScrollView style={{ flex:1}}>
         {courseGoals.map((goal, index) => (
           <View style={styles.listItem} key={index}>
             <Text>{goal}</Text>
