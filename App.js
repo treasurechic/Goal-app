@@ -1,65 +1,52 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import {
-  Button,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Button, FlatList, StyleSheet, View } from "react-native";
+import { GoalInput } from "./components/GoalInput";
+import { GoalItem } from "./components/GoalItem";
 
 export default function App() {
-  const [enteredGoal, setEnteredGoal] = useState();
   const [courseGoals, setCourseGoals] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
-  const goalInputHandler = (text) => {
-    setEnteredGoal(text);
+  const addGoalHandler = (enteredGoal) => {
+    setCourseGoals((currentGoals) => [
+      ...currentGoals,
+      {
+        key: Math.random().toString(),
+        value: enteredGoal,
+      },
+    ]);
+    setShowModal(false);
   };
 
-  const addGoalHandler = () => {
-    setCourseGoals([...courseGoals, enteredGoal]);
+  const removeGoalHandler = (goalId) => {
+    console.log(goalId);
+    setCourseGoals((currentGoals) => {
+      return currentGoals.filter((goal) => goal.key !== goalId);
+    });
   };
-
   return (
     <View style={styles.screen}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Course Goal"
-          style={styles.input}
-          onChangeText={goalInputHandler}
-        />
-        <Button title="ADD" onPress={addGoalHandler} />
-      </View>
-      <ScrollView style={{ flex:1}}>
-        {courseGoals.map((goal, index) => (
-          <View style={styles.listItem} key={index}>
-            <Text>{goal}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      <Button title="Add new goal" onPress={() => setShowModal(true)} />
+      <GoalInput
+        visible={showModal}
+        Cancel={() => setShowModal(false)}
+        onAddGoal={addGoalHandler}
+      />
+      <FlatList
+        data={courseGoals}
+        renderItem={(itemData) => (
+          <GoalItem
+            id={itemData.item.key}
+            title={itemData.item.value}
+            onDelete={removeGoalHandler}
+          />
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 50, flex:1 },
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  input: {
-    width: "80%",
-    borderColor: "#484848",
-    borderWidth: 1,
-    padding: 10,
-  },
-  listItem: {
-    backgroundColor: "#ccc",
-    padding: 10,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: "black",
-  },
+  screen: { padding: 50, flex: 1 },
 });
